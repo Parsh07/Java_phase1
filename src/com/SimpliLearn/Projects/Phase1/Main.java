@@ -2,19 +2,18 @@ package com.SimpliLearn.Projects.Phase1;
 import java.util.Scanner;
 
 public class Main {
-	
 	public static void main(String args[]) {
-		Scanner scanner = new Scanner(System.in);
 		Registration registration = new Registration();
 		Login login = new Login();
-		
+		Scanner mainScanner = new Scanner(System.in);
 		boolean isValid=false;
+		
 		while(!isValid) {
 			new Welcome();
+			String actionInput = mainScanner.nextLine();
 			try {
-				int action = scanner.nextInt();
-				scanner.nextLine();
-				if(action!=1 || action !=2) {
+				int action = Integer.parseInt(actionInput);
+				if(action==1 || action ==2) {
 					switch (action) {
 						case 1:
 							registration.userRegistration();
@@ -32,15 +31,12 @@ public class Main {
 					}
 				}
 				else {
-					System.out.println("Enter valid action number.");
+					System.out.println("Enter valid action number.\n");
 				}
 			} catch (Exception e) {
-				scanner.close();
-				System.out.println("Enter options number");
-				e.printStackTrace();
-				isValid=true;
+				System.out.println("Enter numbers only\n");
 			}
 		}
-		scanner.close();
+		mainScanner.close();
 	}
 }

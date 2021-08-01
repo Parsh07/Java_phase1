@@ -19,30 +19,40 @@ public class Registration {
 		System.out.println("*****************************************************\n"
 				+ "	  --Welcome to Registration Page--			\n"
 							+ "******************************************************");
-		Scanner scanner = new Scanner(System.in);
+		Scanner scan = new Scanner(System.in);
 		while(isUserNameAvailable) {
 			System.out.println();
 			System.out.print("Enter Username : ");
-			this.setUsername(scanner.nextLine());
+			this.setUsername(scan.nextLine());
 			boolean isValid = login.validateUsername(this.getUsername());
 			if(isValid) {
 				System.out.println("Username is already exist");
+				System.out.println("Do you want to login? (enter Y/N to answer) : ");
+				String isLogin = scan.nextLine();
+				if(isLogin.toUpperCase().equals("Y") || isLogin.toUpperCase().equals("N")) {
+					if(isLogin.toUpperCase().equals("Y")) {
+						Login login = new Login();
+						login.userLogin();
+					}
+				}
+				else {
+					System.out.println("Invalid input given");
+				}
 			}
 			else {
 				isUserNameAvailable=false;
 			}
 		}
 		System.out.println();
-		System.out.print("Enter Password : ");
-		setPassword(scanner.nextLine());
+		System.out.print("\nEnter Password : ");
+		setPassword(scan.nextLine());
 		try {
 			writeCredentials();
 			System.out.println("User registered successfully");
 			login.userLogin();
 			isUserNameAvailable=false;
-			scanner.close();
 		} catch (Exception e) {
-			scanner.close();
+			scan.close();
 			System.out.println("Error occured");
 			e.printStackTrace();
 		}

@@ -10,58 +10,50 @@ import java.util.Scanner;
 
 public class Login {
 	private boolean isCredentialsValid=false;
-	private static Registration registration;
+	private static Registration registration = new Registration();;
+
 	File file;
 	ArrayList<String> listOfFiles;
-	
-	public Login() {
-		registration = new Registration();
-	}
-	
+
 	public void userLogin() {
-		Scanner scan = new Scanner(System.in);
-		System.out.println();
-		System.out.println("*****************************************************\n"
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("\n*****************************************************\n"
 				+ "	  --Welcome to Login Page--			\n"
 						+ "******************************************************");
-	
+		
 		while(!isCredentialsValid) {
 			System.out.print("Enter Username : ");
-			String Username = scan.nextLine();
+			String Username = scanner.nextLine();
 			System.out.println();
 			System.out.print("Enter Password : ");
-			String Password = scan.nextLine();
+			String Password = scanner.nextLine();
 			File file = new File("Credentials.txt");
 			if(file.exists()) {
 				if(validateCredentials(Username, Password)) {
 					System.out.println("Login successful\n");
 					registration.setUsername(Username);
 					registration.setPassword(Password);
-					options();
+					this.options();
 					isCredentialsValid=true;
 				}
 			}
 			else {
-				System.out.println("Do you want to register the user? (enter Y/N to answer) : ");
-				String isRegister = scan.nextLine();
-				if(isRegister.toUpperCase().equals("Y")) {
-					registration.userRegistration();
-				}
+				System.out.println("User is not registered, Kindly register the user.");
 			}
 		}
-		scan.close();
+		scanner.close();
 	}
 	
 	public boolean validateUsername(String Username) {
-		Scanner scan;
+		Scanner usernameScan;
 		try {
 			file = new File("Credentials.txt");
 			if(file.exists()) {
 				FileReader fr = new FileReader("Credentials.txt");
-				scan = new Scanner(fr);
+				usernameScan = new Scanner(fr);
 
-				while(scan.hasNextLine()) {
-					String data = scan.nextLine();
+				while(usernameScan.hasNextLine()) {
+					String data = usernameScan.nextLine();
 					String[] creds;
 					creds = data.split(" ");
 					for(int i=0; i<creds.length; i++) {
@@ -72,7 +64,6 @@ public class Login {
 						return true;
 					}
 				}
-				scan.close();
 			}
 			else {
 				return false;
@@ -85,16 +76,16 @@ public class Login {
 	}
 	
 	public boolean validatePassword(String Password) {
-		Scanner scan;
+		Scanner passwordScan;
 		try {
 			file = new File("Credentials.txt");
 			if(file.exists()) {
 				FileReader fr = new FileReader("Credentials.txt");
 				if(fr != null) {
-					scan = new Scanner(fr);
+					passwordScan = new Scanner(fr);
 				
-					while(scan.hasNextLine()) {
-						String data = scan.nextLine();
+					while(passwordScan.hasNextLine()) {
+						String data = passwordScan.nextLine();
 						String[] creds;
 						creds = data.split(" ");
 						for(int i=0; i<creds.length; i++) {
@@ -106,7 +97,6 @@ public class Login {
 							}
 						}
 					}
-					scan.close();
 				}
 				
 			}
@@ -139,20 +129,19 @@ public class Login {
 	}
 	
 	public void options() {
-		Scanner scan = new Scanner(System.in);
+		Scanner optionScan = new Scanner(System.in);
 		boolean isOptionSelected=false;
 		while(!isOptionSelected) {
 			System.out.println("\n\nEnter your choice (numbers) : \n"
-								+"1. FETCH ALL FILEs\n"
+								+"1. FETCH ALL FILES\n"
 								+"2. STORE CREDENTIALS\n"
 								+"3. FETCH ALL STORED CREDENTIALS\n"
 								+"4. DELETE USER CREDENTIAL\n"
 								+"5. SEARCH USER\n"
 								+"6. Quit");
-			
 			int choice;
-			choice = scan.nextInt();
-			if(choice>=1 || choice<=5) {
+			choice = optionScan.nextInt();
+			if(choice>=1 || choice<=6) {
 				switch(choice) {
 					case 1:
 						fetchFiles();
@@ -183,54 +172,65 @@ public class Login {
 				System.out.println("Invalid option is choosed, Please select valid option");
 			}
 		}
-		scan.close();
+		optionScan.close();
 	}
 
 	public void storeCredential() {
-		Scanner scan = new Scanner(System.in);
+		Scanner storeCredScan = new Scanner(System.in);
 		try {
-			System.out.print("Enter credentials : ");
-			String credentials = scan.nextLine();
+			System.out.print("\nEnter credentials : ");
+			String credentials = storeCredScan.nextLine();
 			registration.setPassword(credentials);
 			FileWriter userFile;
 			
 			System.out.print("\nDo you want to store this credentials for another user? (enter Y/N to answer) : ");
-			String storeCreds = scan.nextLine();
-			if(storeCreds.toUpperCase().equals("Y")) {
-				System.out.print("\nEnter username for whom you want to store the credentials (enter username) : ");
-				registration.setUsername(scan.nextLine());
-			}
-			boolean isFileExist=false;
-			while(!isFileExist) {
-				File file = new File("Files\\"+registration.getUsername()+".txt");
-				if(file.exists()) {
-					userFile = new FileWriter("Files\\"+registration.getUsername()+".txt", true);
-					userFile.write(registration.getPassword());
-					userFile.write("\r\n");
-					userFile.close();
-					System.out.println("Credentials stored successfully!");
-					isFileExist = true;
+			String storeCreds = storeCredScan.nextLine();
+			if(storeCreds.toUpperCase().equals("Y") || storeCreds.toUpperCase().equals("N")) {
+				if(storeCreds.toUpperCase().equals("N")) {
+					System.out.println("Storing creds for current user...");
 				}
 				else {
-					System.out.print("\nFile does not exist for - "+registration.getUsername()+","
-									+"\nDo you want to create a file ? (enter Y/N to answer) : ");
-					storeCreds = scan.nextLine();
-					if(storeCreds.toUpperCase().equals("Y")) {
-						FileWriter fr = new FileWriter("Files\\"+registration.getUsername()+".txt");
-						fr.write("*****************Credentials*******************\n");
-						fr.write(registration.getPassword());
-						fr.write("\r\n");
-						fr.close();
-						System.out.println("Credentials are stored successfully in a respective userfile - "+registration.getUsername());
-						isFileExist=true;
+					System.out.print("\nEnter username for whom you want to store the credentials (enter username) : ");
+					registration.setUsername(storeCredScan.nextLine());
+				}
+				
+				boolean isFileExist=false;
+				while(!isFileExist) {
+					File file = new File("Files\\"+registration.getUsername()+".txt");
+					if(file.exists()) {
+						userFile = new FileWriter("Files\\"+registration.getUsername()+".txt", true);
+						userFile.write(registration.getPassword());
+						userFile.write("\r\n");
+						userFile.close();
+						System.out.println("Credentials stored successfully!");
+						isFileExist = true;
 					}
-					else if(storeCreds.toUpperCase().equals("N")) {
-						isFileExist=true;
+					else {
+						System.out.print("\nFile does not exist for user - "+registration.getUsername()+","
+								+"\nDo you want to create a file ? (enter Y/N to answer) : ");
+						storeCreds = storeCredScan.nextLine();
+						if(storeCreds.toUpperCase().equals("Y") || storeCreds.toUpperCase().equals("N")) {
+							if(storeCreds.toUpperCase().equals("Y")) {
+								FileWriter fr = new FileWriter("Files\\"+registration.getUsername()+".txt");
+								fr.write("*****************Credentials*******************\n");
+								fr.write(registration.getPassword());
+								fr.write("\r\n");
+								fr.close();
+								System.out.println("Credentials are stored successfully in a respective userfile - "+registration.getUsername());
+							}
+							isFileExist=true;
+						}
+						else {
+							System.out.println("Invalid input given");
+						}
 					}
 				}
 			}
+			else {
+				System.out.println("Invalid input given");
+			}
 		} catch (IOException e) {
-			scan.close();
+			storeCredScan.close();
 			System.out.println("File not found while storing creds.");
 			e.printStackTrace();
 		}
@@ -261,54 +261,82 @@ public class Login {
 		}
 	}
 	
+	@SuppressWarnings("resource")
 	public void fetchCredentials() {
-		Scanner scan;
-		try {
-			File file = new File("Files\\"+registration.getUsername()+".txt");
-			if(file.exists()) {
-				FileReader fr = new FileReader("Files\\"+registration.getUsername()+".txt");
-				scan = new Scanner(fr);
-				while(scan.hasNextLine()) {
-					System.out.println(scan.nextLine());
-				}
-				scan.close();
+		Scanner fetchCredScan = new Scanner(System.in);
+		System.out.print("\nDo you want to fetch the credentials for another user? (enter Y/N to answer) : ");
+		String isAnotherUser = fetchCredScan.nextLine();
+		if(isAnotherUser.toUpperCase().equals("Y") || isAnotherUser.toUpperCase().equals("N")) {
+			if(isAnotherUser.toUpperCase().equals("N")) {
+				System.out.println("Fetching creds for current user...");
 			}
 			else {
-				System.out.println("File not found");
-			}
-		} catch (Exception e) {
+				System.out.print("\nEnter username for whom you want to fetch the credentials (enter username) : ");
+				registration.setUsername(fetchCredScan.nextLine());
+			}		
+			try {
+				File file = new File("Files\\"+registration.getUsername()+".txt");
+				if(file.exists()) {
+					FileReader fr = new FileReader("Files\\"+registration.getUsername()+".txt");
+					fetchCredScan = new Scanner(fr);
+					System.out.println();
+					while(fetchCredScan.hasNextLine()) {
+						System.out.println(fetchCredScan.nextLine());
+					}
+					fr.close();
+				}
+				else {
+					System.out.println("File not found for user - "+registration.getUsername());
+				}
+			} catch (Exception e) {
+				fetchCredScan.close();
 				System.out.println("File not found while fetching records.");
 				e.printStackTrace();
+			}
+		}
+		else {
+			System.out.println("Invalid input given");
 		}
 	}
 	
 	public void deleteFile() {
-		try {
-			File file = new File("Files\\"+registration.getUsername()+".txt");
-			if(file.exists()) {
-				if(file.delete()) {
-//				if(Files.deleteIfExists(Paths.get(registration.getUsername()))) {
-					System.out.println("File deletion successful");
+		Scanner deleteScan = new Scanner(System.in);
+		System.out.print("\nDo you want to delete the file for another user? (enter Y/N to answer) : ");
+		String isDeleteForAnotherUser = deleteScan.nextLine();
+		if(isDeleteForAnotherUser.toUpperCase().equals("Y") || isDeleteForAnotherUser.toUpperCase().equals("N")) {
+			if(isDeleteForAnotherUser.toUpperCase().equals("Y")) {
+				System.out.print("\nEnter file name which you want to delete (enter username) : ");
+				registration.setUsername(deleteScan.nextLine());
+			}			
+			try {
+				File file = new File("Files\\"+registration.getUsername()+".txt");
+				if(file.exists()) {
+					if(file.delete()) {
+						System.out.println("File deletion successful");
+					}
+					else {
+						System.out.println("File deletion failed");
+					}
 				}
 				else {
-					System.out.println("File deletion failed");
+					System.out.println("File not found for user - "+registration.getUsername());
 				}
+			} catch (Exception e) {
+				deleteScan.close();
+				System.out.println("No such file exists");
+				e.printStackTrace();
 			}
-			else {
-				System.out.println("File not found for user");
-			}
-		} catch (Exception e) {
-			System.out.println("No such file exists");
-			e.printStackTrace();
+		}
+		else {
+			System.out.println("Invalid input given");
 		}
 	}
 	
 	public void searchUser() {
-		System.out.print("Enter username : ");
-		Scanner scan = new Scanner(System.in);
-		if(searchUser(scan.nextLine())){
+		Scanner searchUserScan = new Scanner(System.in);
+		System.out.print("\nEnter username : ");
+		if(searchUser(searchUserScan.nextLine())){
 			System.out.println("User exists");
-			scan.close();
 		}
 		else {
 			System.out.println("User does not exists");
